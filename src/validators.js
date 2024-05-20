@@ -11,6 +11,19 @@ export function validateTimeLineItems(timeLineItems) {
 export function isTimeLineItemValid({ hour }) {
 	return isHourValid(hour);
 }
+
+export function validateActivities(activities) {
+	return activities.every(isActivityValid);
+}
+
+export function isActivityValid(activity) {
+	return isNotEmptyString(activity);
+}
+
+function isNotEmptyString(value) {
+	isString(value) && value.length > 0;
+}
+
 export function isHourValid(hour) {
 	return isNumber(hour) && isBetween(hour, MIDNIGHT_HOUR, HOURS_IN_DAY - 1);
 }
