@@ -1,7 +1,16 @@
-import { NAV_ITEMS, HOURS_IN_DAY, MIDNIGHT_HOUR } from './constants';
+import {
+	NAV_ITEMS,
+	HOURS_IN_DAY,
+	MIDNIGHT_HOUR,
+	BUTTON_TYPES,
+} from './constants';
 
 export function isPageValid(page) {
 	return Object.keys(NAV_ITEMS).includes(page);
+}
+
+export function isButtonTypeValid(type) {
+	return BUTTON_TYPES.includes(type);
 }
 
 export function validateTimeLineItems(timeLineItems) {
@@ -41,7 +50,7 @@ export function isNumberOrNull(value) {
 }
 
 function isSelectOptionValid({ value, label }) {
-	return isNumber(value) && isString(label);
+	return isNumber(value) && isNotEmptyString(label);
 }
 
 function isNumber(value) {
