@@ -1,5 +1,5 @@
 <script setup>
-import { isHourValid } from '../validators';
+import { isHourValid } from '@/validators';
 
 const props = defineProps({
 	hour: {
