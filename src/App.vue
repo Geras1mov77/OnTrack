@@ -1,7 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, computed } from 'vue';
 import {
-	id,
 	normalizePageHash,
 	generateTimelineItems,
 	generateActivitySelectOptions,
@@ -16,26 +15,39 @@ import { PAGE_TIMELINE, PAGE_ACTIVITIES, PAGE_PROGRESS } from './constants';
 
 const currentPage = ref(normalizePageHash());
 
-const timeLineItems = generateTimelineItems();
-
 const activities = ref(generateActivities());
 
-const activitySelectOptions = generateActivitySelectOptions(activities.value);
+const timeLineItems = ref(generateTimelineItems(activities.value));
+
+const activitySelectOptions = computed(() =>
+	generateActivitySelectOptions(activities.value)
+);
 
 function goTo(page) {
 	currentPage.value = page;
 }
 
 function deleteActivity(activity) {
+	timeLineItems.value.forEach(timeLineItem => {
+		if (timeLineItem.activityId === activity.id) {
+			timeLineItem.activityId = null;
+			timeLineItem.activitySeconds = 0;
+		}
+	});
+
 	activities.value.splice(activities.value.indexOf(activity), 1);
 }
 
-function createActivity(name) {
-	activities.value.push({
-		id: id(),
-		name,
-		secondsToComplete: 0,
-	});
+function createActivity(activity) {
+	activities.value.push(activity);
+}
+
+function setTimeLineItemAcivity(timeLineItem, activity) {
+	timeLineItem.activityId = activity.id;
+}
+
+function setActivitySecondsToComplete(activity, secondsToComplete) {
+	activity.secondsToComplete = secondsToComplete;
 }
 </script>
 
@@ -45,14 +57,18 @@ function createActivity(name) {
 	<main class="flex flex-grow flex-col">
 		<TheTimeline
 			v-show="currentPage === PAGE_TIMELINE"
+			:activities="activities"
 			:time-line-items="timeLineItems"
 			:activity-select-options="activitySelectOptions"
+			:current-page="currentPage"
+			@set-time-line-item-activity="setTimeLineItemAcivity"
 		/>
 		<TheActivities
 			v-show="currentPage === PAGE_ACTIVITIES"
 			:activities="activities"
 			@create-activity="createActivity"
 			@deleteActivity="deleteActivity"
+			@set-activity-seconds-to-complete="setActivitySecondsToComplete"
 		/>
 		<TheProgress v-show="currentPage === PAGE_PROGRESS" />
 	</main>
